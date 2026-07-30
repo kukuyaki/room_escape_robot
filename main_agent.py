@@ -10,7 +10,7 @@ import os
 import argparse
 import torch as th
 
-def train_m(env_name):
+def train_m(env_name,file_name,device_name):
     os.makedirs("./models", exist_ok=True)
     match env_name:
         case 'stand':
@@ -27,15 +27,19 @@ def train_m(env_name):
     check_env(env, warn=True)
     print("環境格式檢驗合格！")
     obs, info = env.reset()
+    print(info["episode_count"])
     policy_kwargs = dict(
-        net_arch=[
+        net_arch=
             dict(
                 pi=[256, 256],  # Actor 專屬層
                 vf=[512, 512]   # Critic 專屬層
             )
-        ]
+        
     )
-    model = PPO("MlpPolicy", env, verbose=1, learning_rate=3e-4, n_steps=2048,device="cpu",policy_kwargs=policy_kwargs)
+    if file_name == "1":
+        model = PPO("MlpPolicy", env, verbose=1, learning_rate=3e-4, n_steps=2048,device=device_name,policy_kwargs=policy_kwargs)
+    else:
+        model = PPO.load(f"{file_name}", env=env,device=device_name)
     step_record = 100_000
     ite = 0
     while 1:
@@ -47,7 +51,7 @@ def train_m(env_name):
     env.close()
 
 
-def test_m(env_name,file_name):
+def test_m(env_name,file_name,device_name):
 
     match env_name:
         case 'stand':
@@ -64,14 +68,14 @@ def test_m(env_name,file_name):
     check_env(env, warn=True)
     print("環境格式檢驗合格！")
     obs, info = env.reset()
-    agent = PPO.load(f"{file_name}", env=env,device="cpu")
+    model = PPO.load(f"{file_name}", env=env,device=device_name)
     
     done = False
     total_reward = 0
     step = 0
     while not done: 
         step +=1
-        action, _= agent.predict(obs, deterministic=True)
+        action, _= model.predict(obs, deterministic=True)
         next_obs, reward, terminated, truncated, info = env.step(action)
         done = terminated or truncated
         obs = next_obs
@@ -80,6 +84,7 @@ def test_m(env_name,file_name):
             print(f"{step = }")
             print(f"{total_reward = }")
             print(f"{info["limit"] = }")
+            print(f"{info["max_time"] = }")
 
     env.close()
 if __name__ == "__main__":
@@ -92,15 +97,15 @@ if __name__ == "__main__":
     env_name = args.gymenv
     train = args.train
     test = args.test
-    file_name = args.test
 
-
-
-
+    device_name = "cuda" if th.cuda.is_available() else "cpu"
     if train:
-        train_m(env_name)
+        file_name = args.train
+        train_m(env_name,file_name,device_name)
     if test:
-        test_m(env_name, file_name)
+        file_name = args.test
+
+        test_m(env_name, file_name,device_name)
 
     
 

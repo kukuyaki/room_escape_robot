@@ -385,23 +385,26 @@ class stand(gym.Env):
         )
         # observation: 30 joint angles, 30 joint velocities, chest(3), right_leg(3), left_leg(3) = 69 dims
         self.observation_space = spaces.Box(
-            low=-np.inf, high=np.inf, shape=(69,), dtype=np.float32
+            low=-np.inf, high=np.inf, shape=(72,), dtype=np.float32
         )
 
         self.human = None
         self.human_chest = None
         self.human_left_leg = None
         self.human_right_leg = None
+        self.human_head = None
 
-        self.chest_link_index = 15      #TODO change it to WAIST_LINK2 index
-        self.left_leg_link_index = 11   #TODO change it to r_ankle index
-        self.right_leg_link_index = 5   #TODO change it to l_ankle index
+        self.chest_link_index = 0     #TODO change it to WAIST_LINK2 index
+        self.left_leg_link_index = 0  #TODO change it to r_ankle index
+        self.right_leg_link_index = 0   #TODO change it to l_ankle index
+        self.head_link_index = 0
 
         self.limit = 10000
         self.max_time = 100 * 240
-
+        self.episode_count = 0
     # 獎勵和遊戲內邏輯
     def step(self, action):
+
         terminated = False
         truncated = False
         reward = 0
@@ -433,14 +436,23 @@ class stand(gym.Env):
 
         link_state = p.getLinkState(self.human, self.chest_link_index, physicsClientId=self.client)
         self.human_chest = np.array(link_state[0])
+        link_state = p.getLinkState(self.human, self.head_link_index, physicsClientId=self.client)
+        self.human_head = np.array(link_state[0])
         link_state = p.getLinkState(self.human, self.left_leg_link_index, physicsClientId=self.client)
         self.human_left_leg = np.array(link_state[0])
         link_state = p.getLinkState(self.human, self.right_leg_link_index, physicsClientId=self.client)
         self.human_right_leg = np.array(link_state[0])
-
+        reward +=0.1
         if self.human_chest[2] < 0.8:
             reward-=0.1
             self.limit -= 0.1
+        else:
+            reward+=1
+        if self.human_head[2] < 1.2:
+            reward-=0.1
+            self.limit -= 0.1
+        else:
+            reward+=1
         if self.limit <= 0:
             terminated = True
         # if self.human_right_leg[2] < 0.25 and self.human_left_leg[2] < 0.25:
@@ -448,14 +460,14 @@ class stand(gym.Env):
 
         contact_points = p.getContactPoints(bodyA=self.human, physicsClientId=self.client)
         allowed_contact_links = {self.left_leg_link_index, self.right_leg_link_index}
-        
         for contact in contact_points:
             link_index = contact[3]
             if link_index not in allowed_contact_links:
                 reward -= 10
                 terminated = True
                 break
-        info = {"limit":self.limit}
+        
+        info = {"limit":self.limit,"max_time":self.max_time}
         return observation, reward, terminated, truncated, info
 
     # 重製參數和世界物品
@@ -473,12 +485,13 @@ class stand(gym.Env):
         p.loadURDF("plane.urdf", physicsClientId=self.client)
 
         observation = self._get_observation()
-        info = {}
+        info = {"episode_count":self.episode_count}
 
         return observation, info
 
     # 創建世界物品
     def set_up(self):
+        self.episode_count += 1
         self.limit = 10000
         self.max_time = 100 * 240  # 確保每次 reset 時時間倒數也能重設
         self.human = p.loadURDF(
@@ -502,8 +515,11 @@ class stand(gym.Env):
                 self.left_leg_link_index = i
             elif child_name == "r_ankle":
                 self.right_leg_link_index = i
+            elif child_name == "torso":
+                self.head_link_index = i
                 
-        
+        link_state = p.getLinkState(self.human, self.head_link_index, physicsClientId=self.client)
+        self.human_head = np.array(link_state[0])
         link_state = p.getLinkState(self.human, self.chest_link_index, physicsClientId=self.client)
         self.human_chest = np.array(link_state[0])
         link_state = p.getLinkState(self.human, self.left_leg_link_index, physicsClientId=self.client)
@@ -529,6 +545,7 @@ class stand(gym.Env):
             joint_velocities, 
             self.human_chest,
             self.human_right_leg,
+            self.human_head,
             self.human_left_leg
         ]).astype(np.float32)
         
