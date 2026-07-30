@@ -64,13 +64,14 @@ def test_m(env_name,file_name):
     while not done: 
         step +=1
         action, _= agent.predict(obs, deterministic=True)
-        next_obs, reward, terminated, truncated, _ = env.step(action)
+        next_obs, reward, terminated, truncated, info = env.step(action)
         done = terminated or truncated
         obs = next_obs
         total_reward += reward
         if step%1000:
             print(f"{step = }")
             print(f"{total_reward = }")
+            print(f"{info["limit"] = }")
 
     env.close()
 if __name__ == "__main__":

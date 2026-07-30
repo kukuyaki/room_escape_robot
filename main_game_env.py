@@ -393,11 +393,11 @@ class stand(gym.Env):
         self.human_left_leg = None
         self.human_right_leg = None
 
-        self.chest_link_index = 15
-        self.left_leg_link_index = 11
-        self.right_leg_link_index = 5
+        self.chest_link_index = 15      #TODO change it to WAIST_LINK2 index
+        self.left_leg_link_index = 11   #TODO change it to r_ankle index
+        self.right_leg_link_index = 5   #TODO change it to l_ankle index
 
-        self.limit = 100
+        self.limit = 10000
         self.max_time = 100 * 240
 
     # 獎勵和遊戲內邏輯
@@ -438,14 +438,25 @@ class stand(gym.Env):
         link_state = p.getLinkState(self.human, self.right_leg_link_index, physicsClientId=self.client)
         self.human_right_leg = np.array(link_state[0])
 
-        if human_pos[2] < 1:
+        if self.human_chest[2] < 0.8:
+            reward-=1
             self.limit -= 1
         if self.limit <= 0:
-            pass
+            terminated = True
         if self.human_right_leg[2] < 0.25 and self.human_left_leg[2] < 0.25:
             reward += 1
-            
-        info = {}
+
+
+        # contact_points = p.getContactPoints(bodyA=self.human, physicsClientId=self.client)
+        # allowed_contact_links = {self.left_leg_link_index, self.right_leg_link_index}
+        
+        # for contact in contact_points:
+        #     link_index = contact[3]
+        #     if link_index not in allowed_contact_links:
+        #         reward -= 100
+        #         terminated = True
+        #         break
+        info = {"limit":self.limit}
         return observation, reward, terminated, truncated, info
 
     # 重製參數和世界物品
@@ -469,7 +480,7 @@ class stand(gym.Env):
 
     # 創建世界物品
     def set_up(self):
-        self.limit = 100
+        self.limit = 10000
         self.max_time = 100 * 240  # 確保每次 reset 時時間倒數也能重設
         self.human = p.loadURDF(
             "/home/kgforsure/Documents/github_workspace_yeah/arm_camera_put_inside_hole/humanoid3_colli.urdf",
@@ -488,7 +499,11 @@ class stand(gym.Env):
             child_name = info[12].decode('utf-8')
             if child_name == "WAIST_LINK2":
                 self.chest_link_index = i
-                break
+            elif child_name == "l_ankle":
+                self.left_leg_link_index = i
+            elif child_name == "r_ankle":
+                self.right_leg_link_index = i
+                
         
         link_state = p.getLinkState(self.human, self.chest_link_index, physicsClientId=self.client)
         self.human_chest = np.array(link_state[0])
