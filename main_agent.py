@@ -8,6 +8,7 @@ from main_game_env import stand, walk
 import time
 import os
 import argparse
+import torch as th
 
 def train_m(env_name):
     os.makedirs("./models", exist_ok=True)
@@ -26,9 +27,16 @@ def train_m(env_name):
     check_env(env, warn=True)
     print("環境格式檢驗合格！")
     obs, info = env.reset()
-
-    model = PPO("MlpPolicy", env, verbose=1, learning_rate=3e-4, n_steps=2048,device="cpu")
-    step_record = 25_000
+    policy_kwargs = dict(
+        net_arch=[
+            dict(
+                pi=[256, 256],  # Actor 專屬層
+                vf=[512, 512]   # Critic 專屬層
+            )
+        ]
+    )
+    model = PPO("MlpPolicy", env, verbose=1, learning_rate=3e-4, n_steps=2048,device="cpu",policy_kwargs=policy_kwargs)
+    step_record = 100_000
     ite = 0
     while 1:
         ite+=1
