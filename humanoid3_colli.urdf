@@ -991,7 +991,7 @@
 
   <joint name="RARM_SHOULDER_R" type="revolute">
     <origin xyz="0 0 0" rpy="0 0 0"/>
-    <axis xyz="1 0 0"/>
+    <axis xyz="-1 0 0"/>
     <parent link="RARM_LINK1"/>
     <child link="RARM_LINK2"/>
     <limit effort="100.0" lower="0.00872664625997" upper="2.87106661953" velocity="3.66"/>

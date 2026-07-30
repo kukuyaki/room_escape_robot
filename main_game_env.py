@@ -439,23 +439,22 @@ class stand(gym.Env):
         self.human_right_leg = np.array(link_state[0])
 
         if self.human_chest[2] < 0.8:
-            reward-=1
-            self.limit -= 1
+            reward-=0.1
+            self.limit -= 0.1
         if self.limit <= 0:
             terminated = True
-        if self.human_right_leg[2] < 0.25 and self.human_left_leg[2] < 0.25:
-            reward += 1
+        # if self.human_right_leg[2] < 0.25 and self.human_left_leg[2] < 0.25:
+        #     reward += 1
 
-
-        # contact_points = p.getContactPoints(bodyA=self.human, physicsClientId=self.client)
-        # allowed_contact_links = {self.left_leg_link_index, self.right_leg_link_index}
+        contact_points = p.getContactPoints(bodyA=self.human, physicsClientId=self.client)
+        allowed_contact_links = {self.left_leg_link_index, self.right_leg_link_index}
         
-        # for contact in contact_points:
-        #     link_index = contact[3]
-        #     if link_index not in allowed_contact_links:
-        #         reward -= 100
-        #         terminated = True
-        #         break
+        for contact in contact_points:
+            link_index = contact[3]
+            if link_index not in allowed_contact_links:
+                reward -= 10
+                terminated = True
+                break
         info = {"limit":self.limit}
         return observation, reward, terminated, truncated, info
 
@@ -484,7 +483,7 @@ class stand(gym.Env):
         self.max_time = 100 * 240  # 確保每次 reset 時時間倒數也能重設
         self.human = p.loadURDF(
             "/home/kgforsure/Documents/github_workspace_yeah/arm_camera_put_inside_hole/humanoid3_colli.urdf",
-            [0, 0, 1],
+            [0, 0, 0.8],
             physicsClientId=self.client
         )
         joint_NameToId = {}
