@@ -1,6 +1,8 @@
 '''
 用來訓練走路模型的agent 
 TODO 要去修獎勵函數
+uv run main_agent.py stand -t ./models/ppo......
+uv run main_agent.py stand -s ./models/ppo......
 '''
 from stable_baselines3 import PPO
 from stable_baselines3.common.env_checker import check_env
@@ -38,14 +40,18 @@ def train_m(env_name,file_name,device_name):
     )
     if file_name == "1":
         model = PPO("MlpPolicy", env, verbose=1, learning_rate=3e-4, n_steps=2048,device=device_name,policy_kwargs=policy_kwargs)
+        train_before = 0
     else:
         model = PPO.load(f"{file_name}", env=env,device=device_name)
+        t = file_name.index("agent_")
+        train_before = int(file_name[t+6:-4])
     step_record = 100_000
     ite = 0
+    
     while 1:
         ite+=1
         model.learn(total_timesteps=step_record,reset_num_timesteps=False)
-        file_name = f"./models/ppo_{env_name}_agent_{ite*step_record}"
+        file_name = f"./models/ppo_{env_name}_agent_{train_before+ite*step_record}"
         model.save(file_name)
     # test_m(file_name,ep)
     env.close()
@@ -98,7 +104,8 @@ if __name__ == "__main__":
     train = args.train
     test = args.test
 
-    device_name = "cuda" if th.cuda.is_available() else "cpu"
+    device_name = "cpu"
+    # device_name = "cuda" if th.cuda.is_available() else "cpu"
     if train:
         file_name = args.train
         train_m(env_name,file_name,device_name)

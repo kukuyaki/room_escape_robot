@@ -442,17 +442,17 @@ class stand(gym.Env):
         self.human_left_leg = np.array(link_state[0])
         link_state = p.getLinkState(self.human, self.right_leg_link_index, physicsClientId=self.client)
         self.human_right_leg = np.array(link_state[0])
-        reward +=0.1
+        reward +=1
         if self.human_chest[2] < 0.8:
             reward-=0.1
             self.limit -= 0.1
         else:
-            reward+=1
+            reward+=10
         if self.human_head[2] < 1.2:
             reward-=0.1
             self.limit -= 0.1
         else:
-            reward+=1
+            reward+=10
         if self.limit <= 0:
             terminated = True
         # if self.human_right_leg[2] < 0.25 and self.human_left_leg[2] < 0.25:
