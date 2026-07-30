@@ -1,6 +1,6 @@
 '''
 用來訓練走路模型的agent 
-TODO
+TODO 要去修獎勵函數
 '''
 from stable_baselines3 import PPO
 from stable_baselines3.common.env_checker import check_env
@@ -56,16 +56,21 @@ def test_m(env_name,file_name):
     check_env(env, warn=True)
     print("環境格式檢驗合格！")
     obs, info = env.reset()
-    agent = PPO.load(f"{file_name}.zip", env=env,device="cpu")
+    agent = PPO.load(f"{file_name}", env=env,device="cpu")
     
     done = False
     total_reward = 0
+    step = 0
     while not done: 
+        step +=1
         action, _= agent.predict(obs, deterministic=True)
         next_obs, reward, terminated, truncated, _ = env.step(action)
         done = terminated or truncated
         obs = next_obs
         total_reward += reward
+        if step%1000:
+            print(f"{step = }")
+            print(f"{total_reward = }")
 
     env.close()
 if __name__ == "__main__":
