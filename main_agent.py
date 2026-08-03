@@ -6,17 +6,25 @@ uv run main_agent.py stand -s ./models/ppo......
 '''
 from stable_baselines3 import PPO
 from stable_baselines3.common.env_checker import check_env
-from main_game_env import stand, walk
+from main_game_env import stand, walk, door_out
 import time
 import os
 import argparse
 import torch as th
 
+device = "cuda" if torch.cuda.is_available() else "cpu"
+torch.backends.cudnn.benchmark = True  # 启用CUDA加速
+
+
 def train_m(env_name,file_name,device_name):
     os.makedirs("./models", exist_ok=True)
+
+
     match env_name:
         case 'stand':
             env = stand(render_mode = "no")
+        # case 'door_out':
+        #     env = door_out(render_mode = "no")
         case 'walk':
             env = walk(render_mode = "no")
         # case 'grab':

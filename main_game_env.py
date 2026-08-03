@@ -455,6 +455,7 @@ class stand(gym.Env):
             reward+=10
         if self.limit <= 0:
             terminated = True
+            pass
         # if self.human_right_leg[2] < 0.25 and self.human_left_leg[2] < 0.25:
         #     reward += 1
 
