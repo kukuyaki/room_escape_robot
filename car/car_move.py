@@ -8,12 +8,13 @@ config ={
     "startPos":[0,0,0.2],
     "target_pos":[[5,0,0],[0,5,0],[-3,-3,0],[0,0,0]],
     "simu_time":10000000000000,
-    "force":50,
+    "force":85,
     "velo":10,
     "tolerance":0.5,
     "target_pos_id":0,
     "danger_distance":0.25,
-    "detect_d":10
+    "detect_d":10,
+    "turn_var":0.5
 }
 def detect(config):
     car_pos, car_w = p.getBasePositionAndOrientation(car)
@@ -61,10 +62,10 @@ def move_to(target_id,config):
     force = config["force"]
     velo = config["velo"]
     if abs(yaw_deg-target_deg) >0:
-        fl +=-velo*direc
-        fr +=velo*direc
-        rl +=-velo*direc
-        rr +=velo*direc
+        fl +=-velo*direc*config["turn_var"]
+        fr +=velo*direc*config["turn_var"]
+        rl +=-velo*direc*config["turn_var"]
+        rr +=velo*direc*config["turn_var"]
 
     if math.sqrt(distance[0]**2+distance[1]**2) !=0:
         fl +=min(math.log(1+math.sqrt(distance[0]**2+distance[1]**2))*10, 10)
