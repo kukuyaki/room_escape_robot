@@ -12,8 +12,9 @@ import os
 import argparse
 import torch as th
 
-device = "cuda" if torch.cuda.is_available() else "cpu"
-torch.backends.cudnn.benchmark = True  # 启用CUDA加速
+
+device = "cuda" if th.cuda.is_available() else "cpu"
+th.backends.cudnn.benchmark = True  # 启用CUDA加速
 
 
 def train_m(env_name,file_name,device_name):

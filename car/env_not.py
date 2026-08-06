@@ -1,3 +1,21 @@
+import math
+from typing import Any
+
+import numpy as np
+
+import gymnasium as gym
+from gymnasium import logger, spaces
+from gymnasium.envs.classic_control import utils
+from gymnasium.error import DependencyNotInstalled
+from gymnasium.vector import AutoresetMode, VectorEnv
+from gymnasium.vector.utils import batch_space
+import pybullet as p
+import random
+import pybullet_data
+
+
+
+
 class door_out(gym.Env):
     '''
     最終地圖
@@ -19,7 +37,7 @@ class door_out(gym.Env):
             low=-1.0, high=1.0, shape=(7,), dtype=np.float32
         )
         self.observation_space = spaces.Box(
-            low=-np.inf, high=np.inf, shape=(51,), dtype=np.float32
+            low=-np.inf, high=np.inf, shape=(9,), dtype=np.float32
         )
 
         self.cardId = None
@@ -56,7 +74,6 @@ class door_out(gym.Env):
         # 5. 計算獎勵 (Reward) 與 終止條件 (Done / Terminated)
         observation = self._get_observation()
         
-        human_pos = p.getBasePositionAndOrientation(self.human)[0]
         card_pos = p.getBasePositionAndOrientation(self.cardId)[0]
         
         # 範例獎勵設計：
@@ -65,10 +82,9 @@ class door_out(gym.Env):
         
         terminated = False
         truncated = False
-        
-        if human_pos[0] > 5.0:  # 通關條件
-            reward += 100.0
-            terminated = True
+    
+        reward += 100.0
+        terminated = False
             
         info = {}
         return observation, reward, terminated, truncated, info
