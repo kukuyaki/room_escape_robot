@@ -1,12 +1,12 @@
 '''
 等手臂訓練完畢後，就要來整合全部功能
 場景：目標物、讀卡機、門
-初始化：手臂收起來、車子生成在(0,0)、卡片生在5*5的隨機範圍，讀卡機生成在牆壁上、門在固定位置、四周有牆壁
+初始化：手臂收起來、車子生成在(0,0)、卡片生在5*5的隨機範圍，讀卡機生成z=1的高度、門在終點固定位置
 流程：
-    判斷目標物位置，指派車子走到目標物周圍可讓機械手臂抓取的範圍
+    判斷卡片位置，指派車子走到目標物周圍可讓機械手臂抓取的範圍
     機械手臂抓取目標後，要收縮回去至穩定位置
     車子走到讀卡機周圍，手臂伸縮至讀卡機，一樣收縮回穩定位置
-    車子開出門口
+    車子在時間內開出門口
 '''
 import numpy as np
 import pybullet as p
@@ -188,15 +188,16 @@ for i in range (config["simu_time"]):
         if result[2]*config["detect_d"]>config["danger_distance"]:
             reached = move_to(config["target_pos_id"], config)
             if reached:
-                
                 print(f"Reached target {config['target_pos_id']}! Stopping car to start arm grasping.")
                 # 煞車停下車子
                 for wheel in [2, 3, 4, 5]:
                     p.setJointMotorControl2(car, wheel, controlMode=p.VELOCITY_CONTROL, targetVelocity=0, force=config["force"])
                 # 切換狀態到手臂抓取
                 if config["target_pos_id"] == 0:
+                    model = PPO.load("./car/models/car_grap_observation_v2")
                     config["robot_state"] = "Arm_Grasp"
                 if config["target_pos_id"] == 1:
+                    model = PPO.load("./car/models/car_grap_observation_v2")  #TODO 這邊要用bi卡的模型
                     config["robot_state"] = "Arm_bi"
                 config["target_pos_id"] += 1
                 arm_step_counter = 0
@@ -205,10 +206,6 @@ for i in range (config["simu_time"]):
                 p.setJointMotorControl2(car, wheel, controlMode=p.VELOCITY_CONTROL, targetVelocity=0, force=config["force"])
 
     if config["robot_state"] != "Navigating":
-        if config["robot_state"] == "Arm_Grasp":
-            model = PPO.load("./car/models/car_grap_observation_v2")
-        if config["robot_state"] == "Arm_bi":
-            model = PPO.load("./car/models/car_grap_observation_v2")  #TODO 這邊要用bi卡的模型
         card_pos, _ = p.getBasePositionAndOrientation(cardId)   
         grap_pos = p.getLinkState(arm,11)[0]
         joint_position = []
