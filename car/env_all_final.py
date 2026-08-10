@@ -198,9 +198,28 @@ for i in range (config["simu_time"]):
                 # 切換狀態到手臂抓取
                 if config["target_pos_id"] == 0:
                     model = PPO.load("./car/models/car_grap_observation_v2")
+                    action_joinID_maxV = [
+                        [0,   0,   2.175, -0.36],
+                        [1,   1,   2.175, -1.59],
+                        [2,   2,   2.175, -0.11],
+                        [3,   3,   2.175, -3.14],
+                        [4,   4,   2.61,   2.97],
+                        [5,   5,   2.61,   0.99],
+                        [6,   6,   2.61,   1.07],
+                        [7,   9,   0.2,    0.04],
+                    ]
                     config["robot_state"] = "Arm_Grasp"
                 if config["target_pos_id"] == 1:
                     model = PPO.load("./car/models/car_grap_observation_v2")  #TODO 這邊要用bi卡的模型
+                    action_joinID_maxV = [
+                        [0,   0,   2.175, -0.36],
+                        [1,   1,   2.175, -1.59],
+                        [2,   2,   2.175, -0.11],
+                        [3,   3,   2.175, -3.14],
+                        [4,   4,   2.61,   2.97],
+                        [5,   5,   2.61,   0.99],
+                        [6,   6,   2.61,   1.07],
+                    ]
                     config["robot_state"] = "Arm_bi"
                 config["target_pos_id"] += 1
                 arm_step_counter = 0
@@ -229,16 +248,7 @@ for i in range (config["simu_time"]):
             card_pos
         ]).astype(np.float32)
         action, _states = model.predict(obs, deterministic=True)
-        action_joinID_maxV = [
-            [0,   0,   2.175, -0.36],
-            [1,   1,   2.175, -1.59],
-            [2,   2,   2.175, -0.11],
-            [3,   3,   2.175, -3.14],
-            [4,   4,   2.61,   2.97],
-            [5,   5,   2.61,   0.99],
-            [6,   6,   2.61,   1.07],
-            [7,   9,   0.2,    0.04],
-        ]
+
         for a,j,v,_ in action_joinID_maxV:
             target_vel = float(action[a]) * v * 5 # 放大係數可依訓練速需求調整
             p.setJointMotorControl2(

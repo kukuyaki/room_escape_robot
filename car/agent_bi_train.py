@@ -69,7 +69,7 @@ def train_m(file_name,device_name):
 
 
     env = make_vec_env(
-        env_id="arm_grap-v0",
+        env_id="arm_bi-v0",
         n_envs=config["n_envs"],
         wrapper_class=EpisodeCounterWrapper,
         env_kwargs={
