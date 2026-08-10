@@ -30,36 +30,38 @@ class arm_grap(gym.Env):
             low=-1.0, high=1.0, shape=(8,), dtype=np.float32
         )
         self.observation_space = spaces.Box(
-            low=-np.inf, high=np.inf, shape=(28,), dtype=np.float32
+            low=-np.inf, high=np.inf, shape=(22,), dtype=np.float32
         )
 
         self.cardId = None
         self.car = None
         self.arm = None
         self.room_size = 5
-        self.max_time = 240 * 3
         self.pre_distance = 999
         self.config ={
                 "gravity":-9.8,
                 "startPos":[0,0,0.2],
+                "time":300
             }
+        self.max_time = self.config["time"]
+        self.grip_state = False
 
     #獎勵和遊戲內邏輯
     def step(self, action):
         reward = 0
         self.max_time -=1
-        #動作邊號，關節編號，最大速度
+        #動作邊號，關節編號，最大速度,初始位置
         action_joinID_maxV = [
-            [0,   0,   2.175],
-            [1,   1,   2.175],
-            [2,   2,   2.175],
-            [3,   3,   2.175],
-            [4,   4,   2.61],
-            [5,   5,   2.61],
-            [6,   6,   2.61],
-            [7,   9,   0.2],
+            [0,   0,   2.175, -0.36],
+            [1,   1,   2.175, -1.59],
+            [2,   2,   2.175, -0.11],
+            [3,   3,   2.175, -3.14],
+            [4,   4,   2.61,   2.97],
+            [5,   5,   2.61,   0.99],
+            [6,   6,   2.61,   1.07],
+            [7,   9,   0.2,    0.04],
         ]
-        for a,j,v in action_joinID_maxV:
+        for a,j,v,_ in action_joinID_maxV:
             target_vel = float(action[a]) * v * 5 # 放大係數可依訓練速需求調整
             p.setJointMotorControl2(
                 bodyUniqueId=self.arm,
@@ -108,27 +110,47 @@ class arm_grap(gym.Env):
                 joint_velocity.append(joint_state[1])
             joint_vel = np.array(joint_velocity)
             reward -= 0.001 * np.sum(joint_vel**2)
+
+
+        for i in [0, 1, 2, 3, 4, 5, 6, 9]:
+            joint_info = p.getJointInfo(self.arm, i)
+            lower_limit = joint_info[8]
+            upper_limit = joint_info[9]
+            if lower_limit < upper_limit:
+                current_pos = p.getJointState(self.arm, i)[0]
+                # 如果距離極限小於 0.1 弧度（約 5.7 度），給予微小懲罰
+                if current_pos < lower_limit + 0.1 or current_pos > upper_limit - 0.1:
+                    reward -= 0.01
         #控制懲罰
         reward -= 0.0005 * np.sum(action**2)
 
         #距離變化量懲罰
-        reward -= (distance - self.pre_distance) * 5
+        reward -= (distance - self.pre_distance) * 2
         self.pre_distance = distance
         
         #兩手指同時接觸卡片
+        #檢查手指夾緊力道
         contact_points_1 = p.getContactPoints(bodyA=self.arm, bodyB=self.cardId, linkIndexA=9)
         contact_points_2 = p.getContactPoints(bodyA=self.arm, bodyB=self.cardId, linkIndexA=10)
         if len(contact_points_1) > 0:
-            reward += 0.5
+            reward += 1
         if len(contact_points_2) > 0:
-            reward += 0.5
+            reward += 1
+        if len(contact_points_1) > 0 and len(contact_points_2) > 0:
+            force1 = contact_points_1[0][9]
+            force2 = contact_points_2[0][9]
+            if force1 > 1.0 and force2 > 1.0:
+                self.grip_state = True
+                reward+=5
+        #遠距離卻把手指合起來懲罰
+        finger_state = p.getJointState(self.arm,9)[0] #0~0.04 close to open
+        if distance >0.05 and finger_state <0.02:
+            reward-=0.3
         #卡片抬起判定
-
         if card_pos[2]>0.05:
-            reward +=1
-        # if distance<0.1:
-        #     reward+=50
-        #     terminated = True
+            reward +=5
+
+        #(時間到，結束模擬)判定
         if self.max_time == 0:
             truncated = True
         #在pybullet上顯示reward
@@ -162,7 +184,7 @@ class arm_grap(gym.Env):
             np.array(grap_pos)-np.array(card_pos)
         )
 
-        self.max_time = 240*3
+        self.max_time = self.config["time"]
         observation = self._get_observation()
         info = {}
 
@@ -214,8 +236,25 @@ class arm_grap(gym.Env):
             parentFrameOrientation=[0, 0, 0, 1],
             childFrameOrientation=[0, 0, 0, 1],
         )
-
-
+        action_joinID_maxV = [
+            [0,   0,   2.175, -0.36],
+            [1,   1,   2.175, -1.59],
+            [2,   2,   2.175, -0.11],
+            [3,   3,   2.175, -3.14],
+            [4,   4,   2.61,   2.97],
+            [5,   5,   2.61,   0.99],
+            [6,   6,   2.61,   1.07],
+            [7,   9,   0.2,    0.04],
+        ]
+        for a,j,v,stable_pos in action_joinID_maxV[:-1]:
+            target_pos = stable_pos # 放大係數可依訓練速需求調整
+            p.setJointMotorControl2(
+                bodyUniqueId=arm,
+                jointIndex=j,
+                controlMode=p.POSITION_CONTROL,
+                targetPosition=target_pos,
+                force=50
+            )
         return 0
     #得到觀察值
     def _get_observation(self):
@@ -225,20 +264,23 @@ class arm_grap(gym.Env):
         card_pos, _ = p.getBasePositionAndOrientation(self.cardId)
         car_pos, _ = p.getBasePositionAndOrientation(self.car)
         arm_pos, _ = p.getBasePositionAndOrientation(self.arm)
+        grap_pos = p.getLinkState(self.arm,11)[0]
         joint_position = []
         joint_velocity = []
+
+
         for i in [0,1,2,3,4,5,6,9]:
             joint_state = p.getJointState(self.arm, i)
             joint_position.append(joint_state[0]) # 該關節當前的角度 (position)
             joint_velocity.append(joint_state[1]) # 該關節當前的速度 (velocity)
-        grap_pos = p.getLinkState(self.arm,11)[0]
+
+        relative_pos = np.array(card_pos) - np.array(grap_pos)
+
         obs = np.concatenate([
             joint_position,
             joint_velocity,
-            grap_pos,
-            card_pos,
-            car_pos,
-            arm_pos,
+            relative_pos,
+            card_pos
         ]).astype(np.float32)
         
         return obs

@@ -16,7 +16,7 @@ gym.register(
 )
 
 # 加载训练好的模型
-model = PPO.load("./car/models/car_grap_1")
+model = PPO.load("./car/models/car_grap_observation_v2")
 env = gym.make(
     "arm_grap-v0",
     render_mode="human",  # 开启实时渲染
