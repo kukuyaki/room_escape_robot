@@ -1,10 +1,13 @@
 '''
-用來訓練走路模型的agent 
+手臂抓取卡片的模型訓練
+
 TODO 要去修獎勵函數
 uv run ./car/agent.py -t ./models/ppo......
 uv run main_agent.py stand -s ./models/ppo......
 tensorboard --logdir=./car/tb_logs
 '''
+
+
 from stable_baselines3 import PPO
 from stable_baselines3.common.env_checker import check_env
 import time

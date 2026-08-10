@@ -7,6 +7,9 @@
     機械手臂抓取目標後，要收縮回去至穩定位置
     車子走到讀卡機周圍，手臂伸縮至讀卡機，一樣收縮回穩定位置
     車子在時間內開出門口
+
+
+現在就只差把兩個模型訓練好，之後執行uv run ./car/env_all_final.py 應該就可以達成任務了
 '''
 import numpy as np
 import pybullet as p

@@ -6,7 +6,9 @@ from gymnasium import logger, spaces
 import numpy as np
 import random
 
-
+'''
+手臂抓取卡片的模型訓練環境
+'''
 
 
 class arm_grap(gym.Env):
