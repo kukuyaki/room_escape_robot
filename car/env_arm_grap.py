@@ -100,9 +100,9 @@ class arm_grap(gym.Env):
         sigma_mid  = 0.5
         sigma_far  = 1
         #手臂伸到物品reward
-        reward -= (1.0 - np.exp(-(distance ** 2) / (2 * sigma_near ** 2))) *0.5
-        reward -= (1.0 - np.exp(-(distance ** 2) / (2 * sigma_mid ** 2)))  *0.3
-        reward -= (1.0 - np.exp(-(distance ** 2) / (2 * sigma_far ** 2)))  *0.2
+        reward += np.exp(-(distance ** 2) / (2 * sigma_near ** 2)) *0.5
+        reward += np.exp(-(distance ** 2) / (2 * sigma_mid ** 2))  *0.3
+        reward += np.exp(-(distance ** 2) / (2 * sigma_far ** 2))  *0.2
         #當手指接近目標後，啟動速度懲罰
         if distance<0.1:
             joint_velocity = []

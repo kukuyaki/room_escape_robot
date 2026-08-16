@@ -34,8 +34,8 @@ class EpisodeCounterWrapper(gym.Wrapper):
 
 
 config = {
-    "n_envs": 8,               # 并行环境数量（建议设置为CPU核心数）
-    "total_timesteps": 2_0_000,  # 总训练步数（至少需要500万步）
+    "n_envs": 12,               # 并行环境数量（建议设置为CPU核心数）
+    "total_timesteps": 1_000_000,  # 总训练步数（至少需要500万步）
     #預設為net_arch=[dict(pi=[64, 64], vf=[64, 64])]、啟動函數 activation_fn=nn.Tanh，以及特徵提取器 features_extractor_class=FlattenExtractor
     "policy_kwargs": {
         "net_arch": {
@@ -55,9 +55,12 @@ config = {
     "max_grad_norm": 0.5        # 梯度裁剪
 }
 current_dir = Path(__file__).resolve().parent
-file_path_use_model =  current_dir / "models" / "car_grap_observation_v2.zip"
-file_path_model_save = current_dir / "models" / "car_grap_observation_v2"
+file_path_use_model =  current_dir / "models" / "car_grap_observation_v3.zip"
+file_path_model_save = current_dir / "models" / "car_grap_observation_v4"
 file_path_pkls_save =  current_dir / "pkls" / "car_grap_vecnormalize.pkl"
+
+tb_log_dir = "./car/tb_logs/arm_grap/"
+tb_log_dir_name = "PPO__windows_2"
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 gym.register(
@@ -94,7 +97,7 @@ def train_m(file_name,device_name):
         env=env,
         device=device_name,
         verbose=1,
-        tensorboard_log="./car/tb_logs/arm_grap/",
+        tensorboard_log=tb_log_dir,
         policy_kwargs=config["policy_kwargs"],  # 传递策略网络参数
         learning_rate=config["learning_rate"],
         batch_size=config["batch_size"],
@@ -112,7 +115,7 @@ def train_m(file_name,device_name):
         model.learn(
             total_timesteps=config["total_timesteps"],
             progress_bar=True,
-            tb_log_name=f"PPO_{device_name.upper()}_windows",
+            # tb_log_name=tb_log_dir_name,  #沒特別指定時會自動在每次訓練時分成新的資料夾
             reset_num_timesteps=False
         )
     finally:

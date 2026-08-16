@@ -12,6 +12,9 @@ import os
 import time
 from pathlib import Path
 
+current_dir = Path(__file__).resolve().parent
+file_path_model_load = current_dir / "models" / "car_grap_observation_v2.zip"
+file_path_pkls = current_dir / "pkls" / "car_grap_vecnormalize.pkl"
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 gym.register(
@@ -20,9 +23,8 @@ gym.register(
 )
 
 # 加载训练好的模型
-current_dir = Path(__file__).resolve().parent
-file_path = current_dir / "models" / "car_grap_observation_v2.zip"
-model = PPO.load(file_path)
+
+model = PPO.load(file_path_model_load)
 env = gym.make(
     "arm_grap-v0",
     render_mode="human",  # 开启实时渲染
@@ -30,8 +32,7 @@ env = gym.make(
 
 # 加载归一化参数
 env = DummyVecEnv([lambda: env])  # 包装为向量环境
-file_path = current_dir / "pkls" / "car_grap_vecnormalize.pkl"
-env = VecNormalize.load(file_path, env)
+env = VecNormalize.load(file_path_pkls, env)
 env.training = False
 env.norm_reward = False
 
