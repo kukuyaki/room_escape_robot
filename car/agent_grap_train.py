@@ -19,6 +19,7 @@ from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.vec_env import VecNormalize, VecVideoRecorder
 import sys
 from pathlib import Path
+import datetime
 class EpisodeCounterWrapper(gym.Wrapper):
     def __init__(self, env):
         super().__init__(env)
@@ -55,12 +56,13 @@ config = {
     "max_grad_norm": 0.5        # 梯度裁剪
 }
 current_dir = Path(__file__).resolve().parent
-file_path_use_model =  current_dir / "models" / "car_grap_observation_v3.zip"
-file_path_model_save = current_dir / "models" / "car_grap_20260816_1M" #訓練主題、時間、timestep次數
+file_path_use_model =  current_dir / "models" / "car_grap_20260816_1M.zip"
+file_path_model_save = current_dir / "models" / "car_grap_20260816_2M" #訓練主題、時間、timestep次數
 file_path_pkls_save =  current_dir / "pkls" / "car_grap_vecnormalize.pkl"
 
+now = datetime.datetime.now(tz=datetime.timezone(datetime.timedelta(hours=8)))
 tb_log_dir = "./car/tb_logs/arm_grap/"
-tb_log_dir_name = "PPO__windows_20260816"
+tb_log_dir_name = f"PPO__windows_{now.strftime('%Y%m%d_%H%M')}"
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 gym.register(
@@ -91,24 +93,24 @@ def train_m(file_name,device_name):
     obs= env.reset() 
 
 
-    # model = PPO.load(file_path, env=env,device=device_name)
-    model = PPO(
-        policy="MlpPolicy",  # 使用内置的 MlpPolicy
-        env=env,
-        device=device_name,
-        verbose=1,
-        tensorboard_log=tb_log_dir,
-        policy_kwargs=config["policy_kwargs"],  # 传递策略网络参数
-        learning_rate=config["learning_rate"],
-        batch_size=config["batch_size"],
-        n_steps=config["n_steps"],
-        gamma=config["gamma"],
-        gae_lambda=config["gae_lambda"],
-        clip_range=config["clip_range"],
-        ent_coef=config["ent_coef"],
-        target_kl=config["target_kl"],
-        max_grad_norm=config["max_grad_norm"]
-    )
+    model = PPO.load(file_path_use_model, env=env,device=device_name)
+    # model = PPO(
+    #     policy="MlpPolicy",  # 使用内置的 MlpPolicy
+    #     env=env,
+    #     device=device_name,
+    #     verbose=1,
+    #     tensorboard_log=tb_log_dir,
+    #     policy_kwargs=config["policy_kwargs"],  # 传递策略网络参数
+    #     learning_rate=config["learning_rate"],
+    #     batch_size=config["batch_size"],
+    #     n_steps=config["n_steps"],
+    #     gamma=config["gamma"],
+    #     gae_lambda=config["gae_lambda"],
+    #     clip_range=config["clip_range"],
+    #     ent_coef=config["ent_coef"],
+    #     target_kl=config["target_kl"],
+    #     max_grad_norm=config["max_grad_norm"]
+    # )
     train_before = 0
 
     try:

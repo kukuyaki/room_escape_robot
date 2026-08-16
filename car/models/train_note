@@ -1,0 +1,21 @@
+紀錄每個模型的訓練條件
+
+eg.
+pre models:   從哪個模型繼續訓練
+models:       訓練好的模型名稱
+log:          此模型的tensorboard名稱
+info:         其他細節
+conclution:   對於這次訓練的結論或觀察以及對下次訓練的想法
+
+pre models:   car_grap_20260816_1M
+models:       car_grap_20260816_2M
+log:          PPO__windows_20260817_0
+info:         用之前跑了1M次階段一reward的模型繼續跑階段一reward 1M次
+conclution:   到達高原樣貌，之後應該加上新的reward設計去跑跑看
+
+TODO
+pre models:   car_grap_20260816_2M
+models:       car_grap_20260816_3M
+log:          
+info:         用跑了2M次階段一的模型跑階段一加上階段二的訓練1M次
+conclution:   
