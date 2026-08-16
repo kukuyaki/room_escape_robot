@@ -5,7 +5,6 @@ from stable_baselines3.common.vec_env import VecNormalize, DummyVecEnv
 import matplotlib.pyplot as plt
 
 def visualize_gait(joint_angles: np.ndarray):
-    """可视化关节角度时序变化"""
     plt.figure(figsize=(12, 6))
     labels = [
         'abdomen_z', 'abdomen_y', 'abdomen_x',

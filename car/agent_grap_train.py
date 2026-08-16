@@ -81,9 +81,9 @@ def train_m(file_name,device_name):
 
     env = VecNormalize(env, norm_obs=True, norm_reward=True)
 
-    obs= env.reset()
-    
-    model = PPO.load(f"/home/kgforsure/Documents/github_workspace_yeah/arm_camera_put_inside_hole/car/models/car_grap_observation_v2.zip", env=env,device=device_name)
+    obs= env.reset() 
+   model = PPO.load(f"/home/kgforsure/Documents/github_workspace_yeah/arm_camera_put_inside_hole/car/models/car_grap_observation_v2.zip", env=env,device=device_name)
+s.path.dirname(os.path.abspath(__file__))
     # model = PPO(
     #     policy="MlpPolicy",  # 使用内置的 MlpPolicy
     #     env=env,
