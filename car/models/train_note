@@ -13,10 +13,9 @@ log:          PPO__windows_20260817_0
 info:         用之前跑了1M次階段一reward的模型繼續跑階段一reward 1M次
 conclution:   到達高原樣貌，之後應該加上新的reward設計去跑跑看
 
-TODO
 pre models:   car_grap_20260816_2M
-models:       car_grap_20260817_3M
+models:       car_grap_20260817_0600_3M
 log:          PPO__windows_20260817_0600_0
 info:         用跑了2M次階段一的模型跑階段一加上階段二的訓練1M次
 conclution:   碰巧我原本的二階段reward大部分都是獎勵(+分的)，這樣在tensorboard上如果有達到階段二的目標的話，分數會在之前的基礎再往上，
-              觀察者才看的出來有沒有學好。挺有趣的
+              觀察者才看的出來有沒有學好。挺有趣的。reward有變高，表示有學到一些階段二的東西。
