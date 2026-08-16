@@ -56,13 +56,15 @@ config = {
     "max_grad_norm": 0.5        # 梯度裁剪
 }
 current_dir = Path(__file__).resolve().parent
-file_path_use_model =  current_dir / "models" / "car_grap_20260816_1M.zip"
-file_path_model_save = current_dir / "models" / "car_grap_20260816_2M" #訓練主題、時間、timestep次數
+now = datetime.datetime.now(tz=datetime.timezone(datetime.timedelta(hours=8)))
+use_model = "car_grap_20260816_2M.zip"
+model_save =  f"car_grap_{now.strftime('%Y%m%d_%H%M')}_3M"
+file_path_use_model =  current_dir / "models" / "car_grap_20260816_2M.zip"
+file_path_model_save = current_dir / "models" / f"car_grap_{now.strftime('%Y%m%d_%H%M')}_3M" #訓練主題、時間、timestep次數
 file_path_pkls_save =  current_dir / "pkls" / "car_grap_vecnormalize.pkl"
 
-now = datetime.datetime.now(tz=datetime.timezone(datetime.timedelta(hours=8)))
 tb_log_dir = "./car/tb_logs/arm_grap/"
-tb_log_dir_name = f"PPO__windows_{now.strftime('%Y%m%d_%H%M')}"
+tb_log_dir_name = f"PPO__windows_{model_save}"
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 gym.register(
