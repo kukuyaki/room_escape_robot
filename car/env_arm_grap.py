@@ -47,6 +47,8 @@ class arm_grap(gym.Env):
         self.max_time = self.config["time"]
         self.grip_state = False
 
+        self.reward_level_1 = 1
+        self.reward_level_2 = 0
     #獎勵和遊戲內邏輯
     def step(self, action):
         reward = 0
@@ -99,57 +101,61 @@ class arm_grap(gym.Env):
         sigma_near = 0.2
         sigma_mid  = 0.5
         sigma_far  = 1
-        #手臂伸到物品reward
-        reward += np.exp(-(distance ** 2) / (2 * sigma_near ** 2)) *0.5
-        reward += np.exp(-(distance ** 2) / (2 * sigma_mid ** 2))  *0.3
-        reward += np.exp(-(distance ** 2) / (2 * sigma_far ** 2))  *0.2
-        #當手指接近目標後，啟動速度懲罰
-        if distance<0.1:
-            joint_velocity = []
-            for i in [0,1,2,3,4,5,6,9]:
-                joint_state = p.getJointState(self.arm, i)
-                joint_velocity.append(joint_state[1])
-            joint_vel = np.array(joint_velocity)
-            reward -= 0.001 * np.sum(joint_vel**2)
+        #階段一reward function
+        if self.reward_level_1 == 1:
+            #手臂伸到物品reward
+            reward += np.exp(-(distance ** 2) / (2 * sigma_near ** 2)) *0.5
+            reward += np.exp(-(distance ** 2) / (2 * sigma_mid ** 2))  *0.3
+            reward += np.exp(-(distance ** 2) / (2 * sigma_far ** 2))  *0.2
+            #當手指接近目標後，啟動速度懲罰
+            if distance<0.1:
+                joint_velocity = []
+                for i in [0,1,2,3,4,5,6,9]:
+                    joint_state = p.getJointState(self.arm, i)
+                    joint_velocity.append(joint_state[1])
+                joint_vel = np.array(joint_velocity)
+                reward -= 0.001 * np.sum(joint_vel**2)
 
 
-        for i in [0, 1, 2, 3, 4, 5, 6, 9]:
-            joint_info = p.getJointInfo(self.arm, i)
-            lower_limit = joint_info[8]
-            upper_limit = joint_info[9]
-            if lower_limit < upper_limit:
-                current_pos = p.getJointState(self.arm, i)[0]
-                # 如果距離極限小於 0.1 弧度（約 5.7 度），給予微小懲罰
-                if current_pos < lower_limit + 0.1 or current_pos > upper_limit - 0.1:
-                    reward -= 0.01
-        #控制懲罰
-        reward -= 0.0005 * np.sum(action**2)
+            for i in [0, 1, 2, 3, 4, 5, 6, 9]:
+                joint_info = p.getJointInfo(self.arm, i)
+                lower_limit = joint_info[8]
+                upper_limit = joint_info[9]
+                if lower_limit < upper_limit:
+                    current_pos = p.getJointState(self.arm, i)[0]
+                    # 如果距離極限小於 0.1 弧度（約 5.7 度），給予微小懲罰
+                    if current_pos < lower_limit + 0.1 or current_pos > upper_limit - 0.1:
+                        reward -= 0.01
+            #控制懲罰
+            reward -= 0.0005 * np.sum(action**2)
 
-        #距離變化量懲罰
-        reward -= (distance - self.pre_distance) * 2
-        self.pre_distance = distance
-        
-        #兩手指同時接觸卡片
-        #檢查手指夾緊力道
-        contact_points_1 = p.getContactPoints(bodyA=self.arm, bodyB=self.cardId, linkIndexA=9)
-        contact_points_2 = p.getContactPoints(bodyA=self.arm, bodyB=self.cardId, linkIndexA=10)
-        if len(contact_points_1) > 0:
-            reward += 1
-        if len(contact_points_2) > 0:
-            reward += 1
-        if len(contact_points_1) > 0 and len(contact_points_2) > 0:
-            force1 = contact_points_1[0][9]
-            force2 = contact_points_2[0][9]
-            if force1 > 1.0 and force2 > 1.0:
-                self.grip_state = True
-                reward+=5
-        #遠距離卻把手指合起來懲罰
-        finger_state = p.getJointState(self.arm,9)[0] #0~0.04 close to open
-        if distance >0.05 and finger_state <0.02:
-            reward-=0.3
-        #卡片抬起判定
-        if card_pos[2]>0.05:
-            reward +=5
+            #距離變化量懲罰 先拿掉
+            # reward -= (distance - self.pre_distance) * 2
+            # self.pre_distance = distance
+
+        #階段二reward function
+        if self.reward_level_2 == 1:
+            #兩手指同時接觸卡片
+            #檢查手指夾緊力道
+            contact_points_1 = p.getContactPoints(bodyA=self.arm, bodyB=self.cardId, linkIndexA=9)
+            contact_points_2 = p.getContactPoints(bodyA=self.arm, bodyB=self.cardId, linkIndexA=10)
+            if len(contact_points_1) > 0:
+                reward += 1
+            if len(contact_points_2) > 0:
+                reward += 1
+            if len(contact_points_1) > 0 and len(contact_points_2) > 0:
+                force1 = contact_points_1[0][9]
+                force2 = contact_points_2[0][9]
+                if force1 > 1.0 and force2 > 1.0:
+                    self.grip_state = True
+                    reward+=5
+            #遠距離卻把手指合起來懲罰
+            finger_state = p.getJointState(self.arm,9)[0] #0~0.04 close to open
+            if distance >0.05 and finger_state <0.02:
+                reward-=0.3
+            #卡片抬起判定
+            if card_pos[2]>0.05:
+                reward +=5
 
         #(時間到，結束模擬)判定
         if self.max_time == 0:

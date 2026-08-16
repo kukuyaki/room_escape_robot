@@ -56,11 +56,11 @@ config = {
 }
 current_dir = Path(__file__).resolve().parent
 file_path_use_model =  current_dir / "models" / "car_grap_observation_v3.zip"
-file_path_model_save = current_dir / "models" / "car_grap_observation_v4"
+file_path_model_save = current_dir / "models" / "car_grap_20260816_1M" #訓練主題、時間、timestep次數
 file_path_pkls_save =  current_dir / "pkls" / "car_grap_vecnormalize.pkl"
 
 tb_log_dir = "./car/tb_logs/arm_grap/"
-tb_log_dir_name = "PPO__windows_2"
+tb_log_dir_name = "PPO__windows_20260816"
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 gym.register(
@@ -115,7 +115,7 @@ def train_m(file_name,device_name):
         model.learn(
             total_timesteps=config["total_timesteps"],
             progress_bar=True,
-            # tb_log_name=tb_log_dir_name,  #沒特別指定時會自動在每次訓練時分成新的資料夾
+            tb_log_name=tb_log_dir_name,  #沒特別指定時會自動在每次訓練時分成新的資料夾
             reset_num_timesteps=False
         )
     finally:
