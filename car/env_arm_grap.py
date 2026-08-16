@@ -5,7 +5,7 @@ import pybullet_data
 from gymnasium import logger, spaces
 import numpy as np
 import random
-
+from pathlib import Path
 '''
 手臂抓取卡片的模型訓練環境
 '''
@@ -24,7 +24,6 @@ class arm_grap(gym.Env):
             self.client = p.connect(p.GUI)
         else:
             self.client = p.connect(p.DIRECT)
-            
         p.setAdditionalSearchPath(pybullet_data.getDataPath())
 
 
@@ -219,12 +218,15 @@ class arm_grap(gym.Env):
 
 #````````````````````````````````````````````````````````````
         startOrientation = p.getQuaternionFromEuler([0,0,0])
+        current_dir = Path(__file__).resolve().parent
         #車子
-        self.car = p.loadURDF("/home/kgforsure/Documents/github_workspace_yeah/arm_camera_put_inside_hole/car/husky/husky.urdf",
+        file_path = current_dir / "husky" / "husky.urdf"
+        self.car = p.loadURDF(str(file_path),
                             self.config["startPos"], 
                             startOrientation)
         #機械手臂
-        self.arm = p.loadURDF("/home/kgforsure/Documents/github_workspace_yeah/arm_camera_put_inside_hole/car/franka_panda/panda.urdf",
+        file_path = current_dir / "franka_panda" / "panda.urdf"
+        self.arm = p.loadURDF(str(file_path),
                             [0,0,0.5], startOrientation)
         constraint_id = p.createConstraint(
             parentBodyUniqueId=self.car,
@@ -251,7 +253,7 @@ class arm_grap(gym.Env):
         for a,j,v,stable_pos in action_joinID_maxV[:-1]:
             target_pos = stable_pos # 放大係數可依訓練速需求調整
             p.setJointMotorControl2(
-                bodyUniqueId=arm,
+                bodyUniqueId=self.arm,
                 jointIndex=j,
                 controlMode=p.POSITION_CONTROL,
                 targetPosition=target_pos,

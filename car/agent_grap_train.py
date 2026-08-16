@@ -18,7 +18,7 @@ import torch
 from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.vec_env import VecNormalize, VecVideoRecorder
 import sys
-
+from pathlib import Path
 class EpisodeCounterWrapper(gym.Wrapper):
     def __init__(self, env):
         super().__init__(env)
@@ -35,7 +35,7 @@ class EpisodeCounterWrapper(gym.Wrapper):
 
 config = {
     "n_envs": 8,               # 并行环境数量（建议设置为CPU核心数）
-    "total_timesteps": 50_000,  # 总训练步数（至少需要500万步）
+    "total_timesteps": 2_0_000,  # 总训练步数（至少需要500万步）
     #預設為net_arch=[dict(pi=[64, 64], vf=[64, 64])]、啟動函數 activation_fn=nn.Tanh，以及特徵提取器 features_extractor_class=FlattenExtractor
     "policy_kwargs": {
         "net_arch": {
@@ -54,6 +54,10 @@ config = {
     "target_kl": 0.05,          # KL散度阈值 預設為None
     "max_grad_norm": 0.5        # 梯度裁剪
 }
+current_dir = Path(__file__).resolve().parent
+file_path_use_model =  current_dir / "models" / "car_grap_observation_v2.zip"
+file_path_model_save = current_dir / "models" / "car_grap_observation_v2"
+file_path_pkls_save =  current_dir / "pkls" / "car_grap_vecnormalize.pkl"
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 gym.register(
@@ -82,38 +86,39 @@ def train_m(file_name,device_name):
     env = VecNormalize(env, norm_obs=True, norm_reward=True)
 
     obs= env.reset() 
-   model = PPO.load(f"/home/kgforsure/Documents/github_workspace_yeah/arm_camera_put_inside_hole/car/models/car_grap_observation_v2.zip", env=env,device=device_name)
-s.path.dirname(os.path.abspath(__file__))
-    # model = PPO(
-    #     policy="MlpPolicy",  # 使用内置的 MlpPolicy
-    #     env=env,
-    #     device=device_name,
-    #     verbose=1,
-    #     tensorboard_log="./car/tb_logs/arm_grap/",
-    #     policy_kwargs=config["policy_kwargs"],  # 传递策略网络参数
-    #     learning_rate=config["learning_rate"],
-    #     batch_size=config["batch_size"],
-    #     n_steps=config["n_steps"],
-    #     gamma=config["gamma"],
-    #     gae_lambda=config["gae_lambda"],
-    #     clip_range=config["clip_range"],
-    #     ent_coef=config["ent_coef"],
-    #     target_kl=config["target_kl"],
-    #     max_grad_norm=config["max_grad_norm"]
-    # )
+
+
+    # model = PPO.load(file_path, env=env,device=device_name)
+    model = PPO(
+        policy="MlpPolicy",  # 使用内置的 MlpPolicy
+        env=env,
+        device=device_name,
+        verbose=1,
+        tensorboard_log="./car/tb_logs/arm_grap/",
+        policy_kwargs=config["policy_kwargs"],  # 传递策略网络参数
+        learning_rate=config["learning_rate"],
+        batch_size=config["batch_size"],
+        n_steps=config["n_steps"],
+        gamma=config["gamma"],
+        gae_lambda=config["gae_lambda"],
+        clip_range=config["clip_range"],
+        ent_coef=config["ent_coef"],
+        target_kl=config["target_kl"],
+        max_grad_norm=config["max_grad_norm"]
+    )
     train_before = 0
 
     try:
         model.learn(
             total_timesteps=config["total_timesteps"],
             progress_bar=True,
-            tb_log_name=f"PPO_{device_name.upper()}",
+            tb_log_name=f"PPO_{device_name.upper()}_windows",
             reset_num_timesteps=False
         )
     finally:
         # 保存模型和归一化参数
-        model.save("./car/models/car_grap_observation_v2")
-        env.save("./car/pkls/car_grap_vecnormalize.pkl")
+        model.save(file_path_model_save)
+        env.save(file_path_pkls_save)
         env.close()
 
 
