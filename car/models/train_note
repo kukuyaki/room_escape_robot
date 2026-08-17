@@ -7,6 +7,7 @@ log:          此模型的tensorboard名稱
 info:         其他細節
 conclution:   對於這次訓練的結論或觀察以及對下次訓練的想法
 
+# 測試一
 pre models:   car_grap_20260816_1M
 models:       car_grap_20260816_2M
 log:          PPO__windows_20260817_0
@@ -19,3 +20,16 @@ log:          PPO__windows_20260817_0600_0
 info:         用跑了2M次階段一的模型跑階段一加上階段二的訓練1M次
 conclution:   碰巧我原本的二階段reward大部分都是獎勵(+分的)，這樣在tensorboard上如果有達到階段二的目標的話，分數會在之前的基礎再往上，
               觀察者才看的出來有沒有學好。挺有趣的。reward有變高，表示有學到一些階段二的東西。
+
+pre models:   car_grap_20260816_2M
+models:       car_grap_20260817_0600_3M
+log:          PPO__windows_20260817_0600_0
+info:         用跑了2M次階段一的模型跑階段一加上階段二的訓練1M次
+conclution:   碰巧我原本的二階段reward大部分都是獎勵(+分的)，這樣在tensorboard上如果有達到階段二的目標的話，分數會在之前的基礎再往上，
+              觀察者才看的出來有沒有學好。挺有趣的。reward有變高，表示有學到一些階段二的東西。
+
+#測試二：將目標物用一個高一點的台子抬起來，手臂才容易夾到
+models:       
+log:          
+info:         將env新增一個藍色桌子(高度0.4)，看能不能幫助手臂抓取
+conclution:   

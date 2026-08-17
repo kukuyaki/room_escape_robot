@@ -35,6 +35,7 @@ class arm_grap(gym.Env):
         )
 
         self.cardId = None
+        self.card_holder = None
         self.car = None
         self.arm = None
         self.room_size = 5
@@ -48,7 +49,7 @@ class arm_grap(gym.Env):
         self.grip_state = False
 
         self.reward_level_1 = 1
-        self.reward_level_2 = 1
+        self.reward_level_2 = 0
     #獎勵和遊戲內邏輯
     def step(self, action):
         reward = 0
@@ -129,9 +130,9 @@ class arm_grap(gym.Env):
             #控制懲罰
             reward -= 0.0005 * np.sum(action**2)
 
-            #距離變化量懲罰 先拿掉
-            # reward -= (distance - self.pre_distance) * 2
-            # self.pre_distance = distance
+            # 距離變化量懲罰 先拿掉
+            reward -= (distance - self.pre_distance) * 0.5
+            self.pre_distance = distance
 
         #階段二reward function
         if self.reward_level_2 == 1:
@@ -154,7 +155,7 @@ class arm_grap(gym.Env):
             if distance >0.05 and finger_state <0.02:
                 reward-=0.3
             #卡片抬起判定
-            if card_pos[2]>0.05:
+            if card_pos[2]>0.43:
                 reward +=5
 
         #(時間到，結束模擬)判定
@@ -215,12 +216,16 @@ class arm_grap(gym.Env):
         direction_wall = random.choice([self.room_size-0.2,-self.room_size+0.2])
         wall_size_radom = random.uniform(-self.room_size+0.3,self.room_size-0.3)
         avoid_door = wall_size_radom if abs(wall_size_radom) > 1 else 1.5
-        card_x =random.uniform(0.5,0.8)*random.choice([-1,1]) 
-        card_y =random.uniform(0.5,0.8)*random.choice([-1,1]) 
-        respon_area_card = [card_x, card_y, 0.01]
-        card_col = p.createCollisionShape(p.GEOM_BOX, halfExtents=[0.05, 0.05, 0.05])
-        card_vis = p.createVisualShape(p.GEOM_BOX, halfExtents=[0.05, 0.05, 0.05], rgbaColor=[0.8, 0.2, 0.2, 1]) # 紅色
+        card_x =random.uniform(0.5,0.6)*random.choice([-1,1]) 
+        card_y =random.uniform(0.5,0.6)*random.choice([-1,1]) 
+        respon_area_card = [card_x, card_y, 0.5]
+        respon_area_card_holder = [card_x, card_y, 0.2]
+        card_col = p.createCollisionShape(p.GEOM_BOX, halfExtents=[0.03, 0.03, 0.03])
+        card_vis = p.createVisualShape(p.GEOM_BOX, halfExtents=[0.03, 0.03, 0.03], rgbaColor=[0.8, 0.2, 0.2, 1]) # 紅色
         self.cardId = p.createMultiBody(baseMass=0.1, baseCollisionShapeIndex=card_col, baseVisualShapeIndex=card_vis, basePosition=respon_area_card)
+        card_holder_col = p.createCollisionShape(p.GEOM_BOX, halfExtents=[0.2, 0.2, 0.2])
+        card_holder_vis = p.createVisualShape(p.GEOM_BOX, halfExtents=[0.2, 0.2, 0.2], rgbaColor=[0.2, 0.2, 0.8, 1])
+        self.card_holder = p.createMultiBody(baseMass=0.1, baseCollisionShapeIndex=card_holder_col, baseVisualShapeIndex=card_holder_vis, basePosition=respon_area_card_holder)
 
 #````````````````````````````````````````````````````````````
         startOrientation = p.getQuaternionFromEuler([0,0,0])

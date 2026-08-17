@@ -13,7 +13,7 @@ import time
 from pathlib import Path
 
 current_dir = Path(__file__).resolve().parent
-file_path_model_load = current_dir / "models" / "car_grap_observation_v2.zip"
+file_path_model_load = current_dir / "models" / "car_grap_20260817_0600_3M.zip"
 file_path_pkls = current_dir / "pkls" / "car_grap_vecnormalize.pkl"
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
