@@ -66,7 +66,7 @@ class arm_grap(gym.Env):
             [7,   9,   0.2,    0.04],
         ]
         for a,j,v,_ in action_joinID_maxV:
-            target_vel = float(action[a]) * v * 5 # 放大係數可依訓練速需求調整
+            target_vel = float(action[a]) * v * 3 # 放大係數可依訓練速需求調整
             p.setJointMotorControl2(
                 bodyUniqueId=self.arm,
                 jointIndex=j,
