@@ -57,10 +57,9 @@ config = {
 }
 now = datetime.datetime.now(tz=datetime.timezone(datetime.timedelta(hours=8)))
 current_dir = Path(__file__).resolve().parent
-use_model = "car_grap_20260816_2M.zip"
 
 model_save =  f"car_grap_{now.strftime('%Y%m%d_%H%M')}_3M"
-file_path_use_model =  current_dir / "models" / "car_grap_20260816_2M.zip"
+file_path_use_model =  current_dir / "models" / "car_grap_20260818_0011_2M.zip"
 file_path_model_save = current_dir / "models" / f"{model_save}" #訓練主題、時間、timestep次數
 file_path_pkls_save =  current_dir / "pkls" / f"{model_save}_vecnormalize.pkl"
 
@@ -95,25 +94,26 @@ def train_m(file_name,device_name):
 
     obs= env.reset() 
 
-
-    # model = PPO.load(file_path_use_model, env=env,device=device_name)
-    model = PPO(
-        policy="MlpPolicy",  # 使用内置的 MlpPolicy
-        env=env,
-        device=device_name,
-        verbose=1,
-        tensorboard_log=tb_log_dir,
-        policy_kwargs=config["policy_kwargs"],  # 传递策略网络参数
-        learning_rate=config["learning_rate"],
-        batch_size=config["batch_size"],
-        n_steps=config["n_steps"],
-        gamma=config["gamma"],
-        gae_lambda=config["gae_lambda"],
-        clip_range=config["clip_range"],
-        ent_coef=config["ent_coef"],
-        target_kl=config["target_kl"],
-        max_grad_norm=config["max_grad_norm"]
-    )
+    if file_path_use_model !=None:
+        model = PPO.load(file_path_use_model, env=env,device=device_name)
+    else:
+        model = PPO(
+            policy="MlpPolicy",  # 使用内置的 MlpPolicy
+            env=env,
+            device=device_name,
+            verbose=1,
+            tensorboard_log=tb_log_dir,
+            policy_kwargs=config["policy_kwargs"],  # 传递策略网络参数
+            learning_rate=config["learning_rate"],
+            batch_size=config["batch_size"],
+            n_steps=config["n_steps"],
+            gamma=config["gamma"],
+            gae_lambda=config["gae_lambda"],
+            clip_range=config["clip_range"],
+            ent_coef=config["ent_coef"],
+            target_kl=config["target_kl"],
+            max_grad_norm=config["max_grad_norm"]
+        )
     train_before = 0
 
     try:

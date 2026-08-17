@@ -29,7 +29,31 @@ conclution:   碰巧我原本的二階段reward大部分都是獎勵(+分的)，
               觀察者才看的出來有沒有學好。挺有趣的。reward有變高，表示有學到一些階段二的東西。
 
 #測試二：將目標物用一個高一點的台子抬起來，手臂才容易夾到
-models:       
-log:          
+models:       car_grap_20260817_2334_1M_0
+log:          PPO__windows_car_grap_20260817_2334_1M_0
+pkls:         car_grap_20260817_2334_1M_vecnormalize.pkl
 info:         將env新增一個藍色桌子(高度0.4)，看能不能幫助手臂抓取
 conclution:   
+
+pre models:   car_grap_20260817_2334_1M_0
+models:       ccar_grap_20260818_0011_2M
+log:          PPO__windows_car_grap_20260818_0011_2M_0
+pkls:         car_grap_20260817_2334_1M_vecnormalize.pkl
+info:         將env新增一個藍色桌子(高度0.4)，看能不能幫助手臂抓取
+conclution:   忘記換pkls...
+
+pre models:   car_grap_20260818_0011_2M
+models:       car_grap_20260818_0301_3M
+log:          PPO__windows_car_grap_20260818_0301_3M_0
+pkls:         car_grap_20260817_2334_1M_vecnormalize.pkl
+info:         將env新增一個藍色桌子(高度0.4)，看能不能幫助手臂抓取
+conclution:   忘記換pkls...
+
+
+#測試三：將目標物用一個高一點的台子抬起來，手臂才容易夾到，別忘了換pkls
+models:       
+log:          
+pkls:         
+info:         
+conclution:   
+
