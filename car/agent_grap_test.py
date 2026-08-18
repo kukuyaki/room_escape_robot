@@ -13,8 +13,8 @@ import time
 from pathlib import Path
 
 current_dir = Path(__file__).resolve().parent
-file_path_model_load = current_dir / "models" / "car_grap_20260818_0607_10M_t3.zip"
-file_path_pkls = current_dir / "pkls" / "car_grap_20260818_0607_10M_t3_vecnormalize.pkl"
+file_path_model_load = current_dir / "models" / "t4" / "car_grap_20260819_0405_2MR.zip"
+file_path_pkls = current_dir / "pkls" / "t4" / "car_grap_20260819_0405_2MR_vecnormalize.pkl"
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 gym.register(
