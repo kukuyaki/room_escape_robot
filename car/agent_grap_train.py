@@ -36,7 +36,7 @@ class EpisodeCounterWrapper(gym.Wrapper):
 
 config = {
     "n_envs": 12,               # 并行环境数量（建议设置为CPU核心数）
-    "total_timesteps": 7_000_000,  # 总训练步数（至少需要500万步）
+    "total_timesteps": 100_000,  # 总训练步数（至少需要500万步）
     #預設為net_arch=[dict(pi=[64, 64], vf=[64, 64])]、啟動函數 activation_fn=nn.Tanh，以及特徵提取器 features_extractor_class=FlattenExtractor
     "policy_kwargs": {
         "net_arch": {
@@ -58,16 +58,20 @@ config = {
 now = datetime.datetime.now(tz=datetime.timezone(datetime.timedelta(hours=8)))
 current_dir = Path(__file__).resolve().parent
 
-use_model = None
+test_id = "t5" #測試id 一個測試底下會有多個模型
+train_time = "0p2M"
+
+use_model = "t5/car_grap_20260819_0334_0p1M"#使用的model名稱，若為None則重新訓練
 file_path_use_model =  current_dir / "models" / f"{use_model}"
 file_path_use_pkls = current_dir / "pkls" / f"{use_model}_vecnormalize.pkl"
 
-model_save =  f"car_grap_{now.strftime('%Y%m%d_%H%M')}_1M_t4"
-file_path_model_save = current_dir / "models" / f"{model_save}" #訓練主題、時間、timestep次數
-file_path_pkls_save =  current_dir / "pkls" / f"{model_save}_vecnormalize.pkl"
+model_save =  f"car_grap_{now.strftime('%Y%m%d_%H%M')}_{train_time}" #這次測試中即將要模型的模型名稱
+file_path_model_save = current_dir / "models" / f"{test_id}" / f"{model_save}" 
+file_path_pkls_save =  current_dir / "pkls" / f"{test_id}" / f"{model_save}_vecnormalize.pkl"
+file_path_pkls_save.parent.mkdir(parents=True, exist_ok=True) #pkls不像models會自動偵測並新增資料夾，所以我們要手動寫一下
 
-tb_log_dir = "./car/tb_logs/arm_grap/"
-tb_log_dir_name = f"PPO__windows_{model_save}"
+tb_log_dir = f"./car/tb_logs/arm_grap/{test_id}"
+tb_log_dir_name = f"PPO_{model_save}"
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 gym.register(

@@ -80,18 +80,19 @@ conclution:   前面一直高原，後面有一次暴衝，大概率不是好是
 
 
 #測試四： 調整reward，將可能導致手臂靜止不動的獎勵拿掉，並且更改超參數，希望讓手臂自由探索
-models:       
-log:          
-pkls:         
-info:         
-conclution:   
+models:       t4/car_grap_20260818_2111_1M_t4.zip
+log:          PPO_t4_0
+pkls:         car_grap_20260818_2111_1M_t4_vecnormalize.pkl
+info:         把reward拆成更細的三階段，只使用階段一，表現不錯；並且探索提高確實感覺不錯
+conclution:   reward如果有懲罰的話好像容易導致機械手臂害怕出招，漸進式的學習一開始的時候只放正向獎勵可能會比較好
 
-pre models:   
-models:       
-log:          
-pkls:         
-info:         
-conclution:   
+pre models:   t4/car_grap_20260818_2111_1M_t4.zip
+models:       t4/car_grap_20260818_2150_2M.zip
+log:          PPO_t4_1
+pkls:         不見了嗚嗚
+info:         我嘗試使用更詳細的models、pkls、logs的存放，希望每次測試都能有獨立的資料夾，但沒有做好資料夾是否存在的檢查，導致pkls不見了，
+              models因為sb3會自動建立資料夾所以沒有消失，有點可惜，要重新跑一下2M的訓練
+conclution:   只看log的話，reward有凹向上的上升，目前還沒看到收斂，感覺不錯
 
 pre models:   
 models:       

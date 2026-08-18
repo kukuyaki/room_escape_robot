@@ -49,7 +49,8 @@ class arm_grap(gym.Env):
         self.grip_state = False
 
         self.reward_level_1 = 1
-        self.reward_level_2 = 1
+        self.reward_level_2 = 0
+        self.reward_level_3 = 0
     #獎勵和遊戲內邏輯
     def step(self, action):
         reward = 0
@@ -108,6 +109,13 @@ class arm_grap(gym.Env):
             reward += np.exp(-(distance ** 2) / (2 * sigma_near ** 2)) *0.5
             reward += np.exp(-(distance ** 2) / (2 * sigma_mid ** 2))  *0.3
             reward += np.exp(-(distance ** 2) / (2 * sigma_far ** 2))  *0.2
+            # 距離變化量懲罰 先拿掉 會導致手臂學會停止不動以避免扣分
+            distance_delta = self.pre_distance - distance
+            if distance_delta > 0:  # 只有在「真的有變靠近」時才給正獎勵
+                reward += distance_delta * 10.0
+            self.pre_distance = distance
+        #階段二reward function
+        if self.reward_level_2 == 1:
             #當手指接近目標後，啟動速度懲罰
             if distance<0.1:
                 joint_velocity = []
@@ -116,8 +124,6 @@ class arm_grap(gym.Env):
                     joint_velocity.append(joint_state[1])
                 joint_vel = np.array(joint_velocity)
                 reward -= 0.001 * np.sum(joint_vel**2)
-
-
             for i in [0, 1, 2, 3, 4, 5, 6, 9]:
                 joint_info = p.getJointInfo(self.arm, i)
                 lower_limit = joint_info[8]
@@ -130,14 +136,9 @@ class arm_grap(gym.Env):
             #控制懲罰
             reward -= 0.0005 * np.sum(action**2)
 
-            # 距離變化量懲罰 先拿掉 會導致手臂學會停止不動以避免扣分
-            distance_delta = self.pre_distance - distance
-            if distance_delta > 0:  # 只有在「真的有變靠近」時才給正獎勵
-                reward += distance_delta * 10.0
-
-            self.pre_distance = distance
-        #階段二reward function
-        if self.reward_level_2 == 1:
+            
+        #階段三reward function
+        if self.reward_level_3 == 1:
             #兩手指同時接觸卡片
             #檢查手指夾緊力道
             contact_points_1 = p.getContactPoints(bodyA=self.arm, bodyB=self.cardId, linkIndexA=9)

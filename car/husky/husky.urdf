@@ -57,7 +57,12 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
   <!-- Wheel Mounting Positions -->
   <!-- Wheel Properties -->
   <!-- Base link is on the ground under the robot -->
-  <link name="base_footprint"/>
+  <link name="base_footprint">
+    <inertial>
+      <mass value="0.001"/>
+      <inertia ixx="0.0001" ixy="0.0" ixz="0.0" iyy="0.0001" iyz="0.0" izz="0.0001"/>
+    </inertial>
+  </link>
   <gazebo reference="base_footprint">
     <material>Gazebo/DarkGrey</material>
   </gazebo>
@@ -93,7 +98,12 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
     </gazebo>
   <!-- IMU Link is the standard mounting position for the UM6 IMU.-->
   <!-- Can be modified with environment variables in /etc/ros/setup.bash -->
-  <link name="imu_link"/>
+  <link name="imu_link">
+      <inertial>
+      <mass value="0.001"/>
+      <inertia ixx="0.0001" ixy="0.0" ixz="0.0" iyy="0.0001" iyz="0.0" izz="0.0001"/>
+    </inertial>
+  </link>
   <joint name="imu_joint" type="fixed">
     <origin rpy="$(optenv HUSKY_IMU_RPY 0 -1.5708 3.1416)" xyz="$(optenv HUSKY_IMU_XYZ 0.19 0 0.149)"/>
     <parent link="base_link"/>
@@ -314,6 +324,10 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
       </geometry>
       <material name="Yellow"/>
     </visual>
+    <inertial>
+      <mass value="0.1"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+    </inertial>
   </link>
   <joint name="top_plate" type="fixed">
     <parent link="base_link"/>
@@ -329,6 +343,10 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
       </geometry>
       <material name="DarkGrey"/>
     </visual>
+    <inertial>
+      <mass value="0.1"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+    </inertial>
   </link>
   <joint name="user_rail" type="fixed">
     <origin rpy="0 0 0" xyz="0.272 0 0.245"/>
@@ -345,6 +363,10 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
       </geometry>
       <material name="DarkGrey"/>
     </visual>
+    <inertial>
+      <mass value="0.1"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+    </inertial>
   </link>
   <joint name="front_bumper" type="fixed">
     <origin rpy="0 0 0" xyz="0.48 0 0.091"/>
@@ -361,6 +383,10 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
       </geometry>
       <material name="DarkGrey"/>
     </visual>
+    <inertial>
+      <mass value="0.1"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+    </inertial>
   </link>
   <joint name="rear_bumper" type="fixed">
     <origin rpy="0 0 3.14159" xyz="-0.48 0 0.091"/>
