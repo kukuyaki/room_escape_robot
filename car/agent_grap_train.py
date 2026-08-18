@@ -36,7 +36,7 @@ class EpisodeCounterWrapper(gym.Wrapper):
 
 config = {
     "n_envs": 12,               # 并行环境数量（建议设置为CPU核心数）
-    "total_timesteps": 1_000_000,  # 总训练步数（至少需要500万步）
+    "total_timesteps": 7_000_000,  # 总训练步数（至少需要500万步）
     #預設為net_arch=[dict(pi=[64, 64], vf=[64, 64])]、啟動函數 activation_fn=nn.Tanh，以及特徵提取器 features_extractor_class=FlattenExtractor
     "policy_kwargs": {
         "net_arch": {
@@ -58,8 +58,11 @@ config = {
 now = datetime.datetime.now(tz=datetime.timezone(datetime.timedelta(hours=8)))
 current_dir = Path(__file__).resolve().parent
 
-model_save =  f"car_grap_{now.strftime('%Y%m%d_%H%M')}_3M"
-file_path_use_model =  current_dir / "models" / "car_grap_20260818_0011_2M.zip"
+use_model = "car_grap_20260818_0533_3M_t3"
+file_path_use_model =  current_dir / "models" / f"{use_model}"
+file_path_use_pkls = current_dir / "pkls" / f"{use_model}_vecnormalize.pkl"
+
+model_save =  f"car_grap_{now.strftime('%Y%m%d_%H%M')}_10M_t3"
 file_path_model_save = current_dir / "models" / f"{model_save}" #訓練主題、時間、timestep次數
 file_path_pkls_save =  current_dir / "pkls" / f"{model_save}_vecnormalize.pkl"
 
@@ -90,13 +93,17 @@ def train_m(file_name,device_name):
         }
     )
 
-    env = VecNormalize(env, norm_obs=True, norm_reward=True)
+    
 
     obs= env.reset() 
 
-    if file_path_use_model !=None:
+    if use_model !=None:
         model = PPO.load(file_path_use_model, env=env,device=device_name)
+        env = VecNormalize.load(file_path_use_pkls, env)
+        env.training = True 
+        env.norm_reward = True
     else:
+        env = VecNormalize(env, norm_obs=True, norm_reward=True)
         model = PPO(
             policy="MlpPolicy",  # 使用内置的 MlpPolicy
             env=env,
