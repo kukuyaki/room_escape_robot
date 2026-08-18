@@ -51,9 +51,29 @@ conclution:   忘記換pkls...
 
 
 #測試三：將目標物用一個高一點的台子抬起來，手臂才容易夾到，別忘了換pkls
-models:       
-log:          
-pkls:         
-info:         
-conclution:   
+models:       car_grap_20260818_0402_1M_t3
+log:          car_grap_20260818_0402_1M_t3
+pkls:         car_grap_20260818_0402_1M_t3
+info:         有記得換pkls了
+conclution:   但最後還是到了高原
 
+pre models:   car_grap_20260818_0402_1M_t3
+models:       car_grap_20260818_0444_2M_t3
+log:          car_grap_20260818_0444_2M_t3
+pkls:         car_grap_20260818_0444_2M_t3
+info:         有記得換pkls了
+conclution:   但最後還是到了高原
+
+pre models:   car_grap_20260818_0444_2M_t3
+models:       car_grap_20260818_0533_3M_t3
+log:          car_grap_20260818_0533_3M_t3
+pkls:         car_grap_20260818_0533_3M_t3
+info:         有記得換pkls了
+conclution:   但最後還是到了高原
+
+pre models:   car_grap_20260818_0533_3M_t3
+models:       car_grap_20260818_0607_10M_t3
+log:          car_grap_20260818_0607_10M_t3
+pkls:         car_grap_20260818_0607_10M_t3
+info:         有記得換pkls了，直接跑7M次
+conclution:   前面一直高原，後面有一次暴衝，大概率不是好是，也許該調整探索值以解決高原效應

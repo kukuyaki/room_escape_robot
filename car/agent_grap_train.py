@@ -46,13 +46,13 @@ config = {
         "activation_fn": torch.nn.ReLU
     },
     "learning_rate": 3e-4,
-    "batch_size": 1024,         # 匹配GPU显存容量 預設為64
+    "batch_size": 512,         # 匹配GPU显存容量 預設為64
     "n_steps": 2048,            # 每环境采样步数
     "gamma": 0.99,              # 折扣因子
     "gae_lambda": 0.95,
     "clip_range": 0.2,
-    "ent_coef": 0.001,          # 适度鼓励探索 預設為0.0
-    "target_kl": 0.05,          # KL散度阈值 預設為None
+    "ent_coef": 0.005,          # 适度鼓励探索 預設為0.0
+    "target_kl": 0.2,          # KL散度阈值 預設為None
     "max_grad_norm": 0.5        # 梯度裁剪
 }
 now = datetime.datetime.now(tz=datetime.timezone(datetime.timedelta(hours=8)))

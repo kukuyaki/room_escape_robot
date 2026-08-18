@@ -130,9 +130,9 @@ class arm_grap(gym.Env):
             #控制懲罰
             reward -= 0.0005 * np.sum(action**2)
 
-            # 距離變化量懲罰 先拿掉
-            reward -= (distance - self.pre_distance) * 0.5
-            self.pre_distance = distance
+            # 距離變化量懲罰 先拿掉 會導致手臂學會停止不動以避免扣分
+            # reward -= (distance - self.pre_distance) * 0.5
+            # self.pre_distance = distance
 
         #階段二reward function
         if self.reward_level_2 == 1:
@@ -141,9 +141,9 @@ class arm_grap(gym.Env):
             contact_points_1 = p.getContactPoints(bodyA=self.arm, bodyB=self.cardId, linkIndexA=9)
             contact_points_2 = p.getContactPoints(bodyA=self.arm, bodyB=self.cardId, linkIndexA=10)
             if len(contact_points_1) > 0:
-                reward += 1
+                reward += 3
             if len(contact_points_2) > 0:
-                reward += 1
+                reward += 3
             if len(contact_points_1) > 0 and len(contact_points_2) > 0:
                 force1 = contact_points_1[0][9]
                 force2 = contact_points_2[0][9]
@@ -152,7 +152,7 @@ class arm_grap(gym.Env):
                     reward+=5
             #遠距離卻把手指合起來懲罰
             finger_state = p.getJointState(self.arm,9)[0] #0~0.04 close to open
-            if distance >0.05 and finger_state <0.02:
+            if distance >0.05 and finger_state <0.03:
                 reward-=0.3
             #卡片抬起判定
             if card_pos[2]>0.43:
