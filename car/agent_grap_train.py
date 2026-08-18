@@ -58,11 +58,11 @@ config = {
 now = datetime.datetime.now(tz=datetime.timezone(datetime.timedelta(hours=8)))
 current_dir = Path(__file__).resolve().parent
 
-use_model = "car_grap_20260818_0533_3M_t3"
+use_model = None
 file_path_use_model =  current_dir / "models" / f"{use_model}"
 file_path_use_pkls = current_dir / "pkls" / f"{use_model}_vecnormalize.pkl"
 
-model_save =  f"car_grap_{now.strftime('%Y%m%d_%H%M')}_10M_t3"
+model_save =  f"car_grap_{now.strftime('%Y%m%d_%H%M')}_1M_t4"
 file_path_model_save = current_dir / "models" / f"{model_save}" #訓練主題、時間、timestep次數
 file_path_pkls_save =  current_dir / "pkls" / f"{model_save}_vecnormalize.pkl"
 

@@ -77,3 +77,25 @@ log:          car_grap_20260818_0607_10M_t3
 pkls:         car_grap_20260818_0607_10M_t3
 info:         有記得換pkls了，直接跑7M次
 conclution:   前面一直高原，後面有一次暴衝，大概率不是好是，也許該調整探索值以解決高原效應
+
+
+#測試四： 調整reward，將可能導致手臂靜止不動的獎勵拿掉，並且更改超參數，希望讓手臂自由探索
+models:       
+log:          
+pkls:         
+info:         
+conclution:   
+
+pre models:   
+models:       
+log:          
+pkls:         
+info:         
+conclution:   
+
+pre models:   
+models:       
+log:          
+pkls:         
+info:         
+conclution:   
