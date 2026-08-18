@@ -59,9 +59,9 @@ now = datetime.datetime.now(tz=datetime.timezone(datetime.timedelta(hours=8)))
 current_dir = Path(__file__).resolve().parent
 
 test_id = "t4" #測試id 一個測試底下會有多個模型
-train_time = "3M"
+train_time = "4M"
 
-use_model = "car_grap_20260819_0405_2MR"#使用的model名稱，若為None則重新訓練
+use_model = "car_grap_20260819_0444_3M"#使用的model名稱，若為None則重新訓練
 file_path_use_model =  current_dir / "models" / f"{test_id}" / f"{use_model}"
 file_path_use_pkls = current_dir / "pkls" / f"{test_id}" / f"{use_model}_vecnormalize.pkl"
 

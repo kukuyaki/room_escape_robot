@@ -50,7 +50,7 @@ class arm_grap(gym.Env):
 
         self.reward_level_1 = 1
         self.reward_level_2 = 0
-        self.reward_level_3 = 0
+        self.reward_level_3 = 1
     #獎勵和遊戲內邏輯
     def step(self, action):
         reward = 0
