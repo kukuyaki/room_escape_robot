@@ -148,6 +148,28 @@
 # print(cubePos,cubeOrn)
 # p.disconnect()
 
-import datetime
-now = datetime.datetime.now(tz=datetime.timezone(datetime.timedelta(hours=8)))
-print(now.strftime('%Y%m%d_%H%M'))
+# import datetime
+# now = datetime.datetime.now(tz=datetime.timezone(datetime.timedelta(hours=8)))
+# print(now.strftime('%Y%m%d_%H%M'))
+
+# -*- encoding: utf-8 -*-
+#!/bin/python3
+from Crypto.Cipher import AES
+import base64
+
+plain_text = b""
+with open("./packet2.txt", "r")as f:
+    for encrypted in f.readlines():
+        encrypted = encrypted.replace("\n","")
+        BS = AES.block_size
+        mode = AES.MODE_CBC
+        pad = lambda s: s + (BS-len(s))*b"\0"
+        pad_txt = lambda s: s + (BS - len(s) % BS) * chr(BS - len(s) % BS)
+        unpad = lambda s : s[0:-ord(s[-1])]
+        key = b"TPONEMESH_Kf!xn?"
+        vi = b"1234567890abcdef"
+        cryptor = AES.new(pad(key), mode, vi)
+        plain_text += cryptor.decrypt(bytes.fromhex(encrypted[32:]))
+        plain_text += b'\n'
+with open("./decrypt2.txt", "wb")as f1:
+    f1.write(plain_text)
