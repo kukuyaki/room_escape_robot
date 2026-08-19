@@ -87,16 +87,27 @@ info:         把reward拆成更細的三階段，只使用階段一，表現不
 conclution:   reward如果有懲罰的話好像容易導致機械手臂害怕出招，漸進式的學習一開始的時候只放正向獎勵可能會比較好
 
 pre models:   t4/car_grap_20260818_2111_1M_t4.zip
-models:       t4/car_grap_20260818_2150_2M.zip
-log:          PPO_t4_1
-pkls:         不見了嗚嗚
+models:       t4/car_grap_20260819_0405_2MR.zip
+log:          PPO_car_grap_20260819_0405_2MR_0
+pkls:         car_grap_20260819_0405_2MR_vecnormalize.pkl
 info:         我嘗試使用更詳細的models、pkls、logs的存放，希望每次測試都能有獨立的資料夾，但沒有做好資料夾是否存在的檢查，導致pkls不見了，
-              models因為sb3會自動建立資料夾所以沒有消失，有點可惜，要重新跑一下2M的訓練
+              models因為sb3會自動建立資料夾所以沒有消失，有點可惜，要重新跑一下2M的訓練（已經重跑成2MR了）
 conclution:   只看log的話，reward有凹向上的上升，目前還沒看到收斂，感覺不錯
 
-pre models:   
-models:       
-log:          
-pkls:         
-info:         
-conclution:   
+
+pre models:   t4/car_grap_20260818_2150_2M.zip
+models:       t4/car_grap_20260819_0444_3M.zip
+log:          PPO_car_grap_20260819_0444_3M_0
+pkls:         car_grap_20260819_0444_3M_vecnormalize.pkl
+info:         繼續跑
+conclution:   手臂會打翻桌子，log似乎趨於平穩
+
+pre models:   t4/car_grap_..._3M.zip
+models:       t4/car_grap_..._4M.zip
+log:          PPO_car_grap_..._4M_0
+pkls:         car_grap_...4M_vecnormalize.pkl
+info:         使用1和3reward，想讓他學一下把東西抓起來
+conclution:   手臂會打翻桌子，log似乎趨於平穩
+                因為底座不是固定的，當手臂往目標物移動時有機會把底座和目標物打飛，導致該次訓練分數下降，
+                可能導致手臂害怕出手，下次測試應該把底座固定或是想個辦法讓物品好抓但又不會飛走；手臂有可能會
+                左右擺盪，無法穩定指向目標物，可能跟探索率有關西，也可能和沒有動作控制獎勵有關係。
