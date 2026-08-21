@@ -152,24 +152,48 @@
 # now = datetime.datetime.now(tz=datetime.timezone(datetime.timedelta(hours=8)))
 # print(now.strftime('%Y%m%d_%H%M'))
 
-# -*- encoding: utf-8 -*-
-#!/bin/python3
-from Crypto.Cipher import AES
-import base64
+# # -*- encoding: utf-8 -*-
+# #!/bin/python3
+# from Crypto.Cipher import AES
+# import base64
 
-plain_text = b""
-with open("./packet2.txt", "r")as f:
-    for encrypted in f.readlines():
-        encrypted = encrypted.replace("\n","")
-        BS = AES.block_size
-        mode = AES.MODE_CBC
-        pad = lambda s: s + (BS-len(s))*b"\0"
-        pad_txt = lambda s: s + (BS - len(s) % BS) * chr(BS - len(s) % BS)
-        unpad = lambda s : s[0:-ord(s[-1])]
-        key = b"TPONEMESH_Kf!xn?"
-        vi = b"1234567890abcdef"
-        cryptor = AES.new(pad(key), mode, vi)
-        plain_text += cryptor.decrypt(bytes.fromhex(encrypted[32:]))
-        plain_text += b'\n'
-with open("./decrypt2.txt", "wb")as f1:
-    f1.write(plain_text)
+# plain_text = b""
+# with open("./packet2.txt", "r")as f:
+#     for encrypted in f.readlines():
+#         encrypted = encrypted.replace("\n","")
+#         BS = AES.block_size
+#         mode = AES.MODE_CBC
+#         pad = lambda s: s + (BS-len(s))*b"\0"
+#         pad_txt = lambda s: s + (BS - len(s) % BS) * chr(BS - len(s) % BS)
+#         unpad = lambda s : s[0:-ord(s[-1])]
+#         key = b"TPONEMESH_Kf!xn?"
+#         vi = b"1234567890abcdef"
+#         cryptor = AES.new(pad(key), mode, vi)
+#         plain_text += cryptor.decrypt(bytes.fromhex(encrypted[32:]))
+#         plain_text += b'\n'
+# with open("./decrypt2.txt", "wb")as f1:
+#     f1.write(plain_text)
+# import pickle
+# import collections
+
+# # 利用 collections.namedtuple 產生的類別，並手動修正其 module 屬性讓它可以被 pickle 序列化
+# cf = collections.namedtuple("E",["e"])
+# c = cf(123)
+# payload = pickle.dumps(print(123))
+# print(payload.hex())
+
+def gen_prime(r):
+    while True:
+        v = (r.next() + r.A) % r.M
+
+        if is_prime(v):
+            return v
+def next(r1,r2,r3):
+    self.seed = self.seed * self.A + self.B
+    self.seed = self.seed % self.M
+    return self.seed
+n = 44979109816375385151192616993734668238566297274190235143253001178909321789685748949783780256179900720054259174083239485774007638771699762776865247911787951100011957147510134470553803417445338768645750190488175178351636416497362113345093186073732514592691500000060106131643200307374932799352104677022953917929
+r1 = 7774080469706542028052089782021726541332013160388645474660746006826129083479192904363768225154008589165127947494958152840398642469668392329432951186189121, 
+r2 = 5820931323708717278385542913648368340521297441473881748936757981486214113069931647155806153779678327907554684112886909779238302608329052202908488211196889, 
+r3 = 12353988392867421544854313180561660683555910980058952603694950929586432387559301935442629498762388392107985249955985825336134383672034582904567227111628321
+val: 16576115284449824053753026975805510807703815731131452775055155621325948694170022356135656215373482666170244603555499747477140548412693599398145898682259084712417703414641309845706910504356048304887844603379197135277834205574425451559275869278321148300185864246800047174642052978339095661652949790423820963037

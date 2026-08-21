@@ -47,7 +47,6 @@ for ep in range(10):  # 测试10个episode
         obs, reward, done, info = env.step(action)
         time.sleep(0.01)
         if done[0]:
-            # 计算行走速度
             print(f"Episode {ep+1}:")
             print(f"  - Total Reward: {total_reward:.1f}")
             break
